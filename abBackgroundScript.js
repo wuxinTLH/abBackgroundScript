@@ -41,22 +41,99 @@
 // @namespace https://greasyfork.org/users/599643
 // ==/UserScript==
 
-
-"use strict"
-
-window.onload = () => {
+"use strict";
+$("window").ready(() => {
     //获取host,选择分支
-    let host = window.location.host;
-    if (host == "bilibili.com") {
-
-    } else {
-
+    let abChosen, liveFlag, host = window.location.host;
+    //判断ab站
+    if (host.indexOf("bilibili") != -1) {
+        abChosen = "bili";
+        //b站
+        //是否为直播
+        if (host == "live.bilibili.com") {
+            //是
+            liveFlag = true;
+        } else {
+            //不是
+            liveFlag = false;
+        }
+    } else if (host.indexOf("acfun") != -1) {
+        abChosen = "acfun";
+        liveFlag = false
+        //a站
     }
 
     //#region 封装方法
 
-    function setBackgroundBox() {
+    /**
+     * @description 对ab站进行Box的创建
+     * @param {String} abChosen 
+     */
+    function setBackgroundBox(abChosen) {
+        let elBody = getElBody(abChosen);
+        let father_node = $(elBody)[0];
+        let background_box = document.createElement("div");
+        father_node.appendChild(background_box);
+        background_box.innerHTML = `
+        <button class="clickButton" v-on:click="displayChangeBox()">更改背景</button>
+        <div class="ChangeBox">
+            <h4>更改背景</h4>
+            <div class="defaultBox">
+                <img :src="default_url[0]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[0])">
+                <img :src="default_url[1]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[1])">
+                <img :src="default_url[2]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[2])">
+                <img :src="default_url[3]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[3])">
+                <img :src="default_url[4]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[4])">
+                <img :src="default_url[5]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[5])">
+            </div>
+            <div class="diyBox">
+                <input type="text" name="" id="diyInput" placeholder="请输入背景URL">
+                <button id="diySubmit" v-on:click="diyBackgroundChange()" accept="image/png,image/webp">点击修改</button>
+                <input type="file" name="" id="base64Pic">
+                <button id="diySubmit" v-on:click="diyBase64Change()">点击修改</button>
+            </div>
+        </div>
+        `;
+        background_box.id = "sakuraBackgroundBox";
+        //console.log("sakuraBackgroundBox创建完毕");
 
+        //根据elBody进行BackgroundBox的生成
+
+        /*
+        if (abChosen == "bili") {
+            if (liveFlag) {
+                //直播
+            } else {
+                //非直播
+            }
+        } else {
+
+        }
+        */
+    }
+
+
+    /**
+     * @description 根据ab站获取对应的vue绑定Element
+     * @param {String} abChosen 
+     * @returns {String} elBody
+     */
+    function getElBody(abChosen) {
+        let elBody;
+        if (ab_chosen == "bili") {
+            if ($("#app").length > 0) {
+                elBody = "#app";
+            } else {
+                elBody = "body";
+            }
+        } else if (abChosen == "acfun") {
+            if ($("#main").length > 0) {
+                elBody = "#main";
+            } else {
+                elBody = "body";
+            }
+        }
+        return elBody;
     }
     //#endregion
-}
+});
