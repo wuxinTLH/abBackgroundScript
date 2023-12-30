@@ -42,28 +42,32 @@
 // ==/UserScript==
 
 "use strict";
-$("window").ready(() => {
-    //获取host,选择分支
-    let abChosen, liveFlag, host = window.location.host;
-    //判断ab站
-    if (host.indexOf("bilibili") != -1) {
-        abChosen = "bili";
-        //b站
-        //是否为直播
-        if (host == "live.bilibili.com") {
-            //是
-            liveFlag = true;
-        } else {
-            //不是
-            liveFlag = false;
-        }
-    } else if (host.indexOf("acfun") != -1) {
-        abChosen = "acfun";
-        liveFlag = false
-        //a站
-    }
+window.onload = () => {
+    init();
 
     //#region 封装方法
+
+    function init() {
+        //获取host,选择分支
+        let abChosen, liveFlag, host = window.location.host;
+        //判断ab站
+        if (host.indexOf("bilibili") != -1) {
+            abChosen = "bili";
+            //b站
+            //是否为直播
+            if (host == "live.bilibili.com") {
+                //是
+                liveFlag = true;
+            } else {
+                //不是
+                liveFlag = false;
+            }
+        } else if (host.indexOf("acfun") != -1) {
+            abChosen = "acfun";
+            liveFlag = false
+            //a站
+        }
+    }
 
     /**
      * @description 对ab站进行Box的创建
@@ -75,25 +79,25 @@ $("window").ready(() => {
         let background_box = document.createElement("div");
         father_node.appendChild(background_box);
         background_box.innerHTML = `
-        <button class="clickButton" v-on:click="displayChangeBox()">更改背景</button>
-        <div class="ChangeBox">
-            <h4>更改背景</h4>
-            <div class="defaultBox">
-                <img :src="default_url[0]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[0])">
-                <img :src="default_url[1]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[1])">
-                <img :src="default_url[2]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[2])">
-                <img :src="default_url[3]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[3])">
-                <img :src="default_url[4]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[4])">
-                <img :src="default_url[5]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[5])">
-            </div>
-            <div class="diyBox">
-                <input type="text" name="" id="diyInput" placeholder="请输入背景URL">
-                <button id="diySubmit" v-on:click="diyBackgroundChange()" accept="image/png,image/webp">点击修改</button>
-                <input type="file" name="" id="base64Pic">
-                <button id="diySubmit" v-on:click="diyBase64Change()">点击修改</button>
-            </div>
+    <button class="clickButton" v-on:click="displayChangeBox()">更改背景</button>
+    <div class="ChangeBox">
+        <h4>更改背景</h4>
+        <div class="defaultBox">
+            <img :src="default_url[0]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[0])">
+            <img :src="default_url[1]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[1])">
+            <img :src="default_url[2]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[2])">
+            <img :src="default_url[3]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[3])">
+            <img :src="default_url[4]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[4])">
+            <img :src="default_url[5]" alt="" class="defaultImage" v-on:click="defaultBackgroundChange(default_url[5])">
         </div>
-        `;
+        <div class="diyBox">
+            <input type="text" name="" id="diyInput" placeholder="请输入背景URL">
+            <button id="diySubmit" v-on:click="diyBackgroundChange()" accept="image/png,image/webp">点击修改</button>
+            <input type="file" name="" id="base64Pic">
+            <button id="diySubmit" v-on:click="diyBase64Change()">点击修改</button>
+        </div>
+    </div>
+    `;
         background_box.id = "sakuraBackgroundBox";
         //console.log("sakuraBackgroundBox创建完毕");
 
@@ -107,7 +111,6 @@ $("window").ready(() => {
                 //非直播
             }
         } else {
-
         }
         */
     }
@@ -136,4 +139,4 @@ $("window").ready(() => {
         return elBody;
     }
     //#endregion
-});
+}
