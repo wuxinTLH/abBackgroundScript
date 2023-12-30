@@ -45,5 +45,18 @@
 "use strict"
 
 window.onload = () => {
+    //获取host,选择分支
+    let host = window.location.host;
+    if (host == "bilibili.com") {
 
+    } else {
+
+    }
+
+    //#region 封装方法
+
+    function setBackgroundBox() {
+
+    }
+    //#endregion
 }
