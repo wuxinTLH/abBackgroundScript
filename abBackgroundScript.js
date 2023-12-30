@@ -46,27 +46,66 @@ window.onload = () => {
     init();
 
     //#region 封装方法
-
     function init() {
         //获取host,选择分支
         let abChosen, liveFlag, host = window.location.host;
+
         //判断ab站
-        if (host.indexOf("bilibili") != -1) {
+        if (host.indexOf("bilibili") != -1) { //b站
             abChosen = "bili";
-            //b站
             //是否为直播
-            if (host == "live.bilibili.com") {
-                //是
+            if (host == "live.bilibili.com") { //是
                 liveFlag = true;
-            } else {
-                //不是
+            } else { //不是
                 liveFlag = false;
             }
-        } else if (host.indexOf("acfun") != -1) {
+        } else if (host.indexOf("acfun") != -1) { //a站
             abChosen = "acfun";
             liveFlag = false
-            //a站
         }
+        //初始化backgroundBox
+        setBackgroundBox(abChosen);
+        //将backgroundBox进行vue绑定
+        let BackgroundBoxVue = new Vue({
+            el: '#sakuraBackgroundBox',
+            methods: {
+                displayChangeBox: function () {
+                    let changeBox = $('.ChangeBox');
+                    changeBox.css('display', changeBox.css('display') === 'none' ? 'block' : 'none');
+                },
+                defaultBackgroundChange: function (src) {
+
+                },
+                diyBackgroundChange: function () {
+                    if ($("#diyInput").val() == "" || $("#diyInput").val() == null) {
+                        alert("请不要输入空值");
+                        return null;
+                    } else {
+                        //设置背景
+                        let url = $("#diyInput").val();
+                    }
+                },
+                diyBase64Change: function () {
+                    let file = $("#base64Pic")[0].files[0];
+                    let reader = new FileReader();
+                    if (file) {
+                        reader.readAsDataURL(file);
+                        reader.onloadend = function () {
+                            // console.log(reader.result);
+                            setBackgroundImage(reader.result, ab_chosen);
+                        }
+                    } else {
+                        alert("请上传一张图片");
+                    }
+                }
+            }
+        });
+        //生成背景div
+        setDivClassSakuraBackground(abChosen);
+        //生成背景
+        let bcurl = window.localStorage.getItem('bcurl');
+        bcurl = bcurl && bcurl.trim() !== '' ? bcurl : '默认bcurl';
+        setBackgroundImage(url, abChosen);
     }
 
     /**
@@ -92,7 +131,7 @@ window.onload = () => {
         </div>
         <div class="diyBox">
             <input type="text" name="" id="diyInput" placeholder="请输入背景URL">
-            <button id="diySubmit" v-on:click="diyBackgroundChange()" accept="image/png,image/webp">点击修改</button>
+            <button id="diySubmit" v-on:click="diyBackgroundChange()">点击修改</button>
             <input type="file" name="" id="base64Pic">
             <button id="diySubmit" v-on:click="diyBase64Change()">点击修改</button>
         </div>
@@ -138,5 +177,34 @@ window.onload = () => {
         }
         return elBody;
     }
+
+
+    //主程序 设置背景
+
+    function setBackgroundImage(url, abChosen) {
+
+    }
+
+    //背景div生成
+    function setDivClassSakuraBackground(elBody) { }
+
+    /**
+     * 在window的localStorage中存储url或base64值
+     * @param {String} url 
+     */
+    function setBcurl(url) {
+        if (url) {
+            window.localStorage.setItem('bcurl', url);
+        }
+    }
+
+    /**
+     * @returns {String} 返回一个url或base64值
+     */
+    function getBcurl() {
+        let url = window.localStorage.getItem('bcurl');
+        return url;
+    }
+
     //#endregion
 }
