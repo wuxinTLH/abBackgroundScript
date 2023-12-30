@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         AB站网页背景更改
-// @description  更改ab站背景的懒人脚本，引用vue和jquery优化
+// @description  更改ab站背景的脚本，第三代版本，进一步优化代码
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
 // @bilibili     https://space.bilibili.com/29058270
