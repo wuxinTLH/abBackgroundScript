@@ -3,13 +3,20 @@
 // @description  更改ab站背景的脚本，第三代版本，进一步优化代码
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
+// @version      1.0.0.0
+// @author       SakuraMikku
+// @copyright    SakuraMikku
+// @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
+// @QQgroup      793513923
+// @QQgroup      https://jq.qq.com/?_wv=1027&k=0ewDiWw1
+// @grant        GM_xmlhttpRequest
 // @bilibili     https://space.bilibili.com/29058270
 // @github       https://github.com/wuxintlh/
 // @githubBoke   https://wuxintlh.github.io
 // @acfun        https://www.acfun.cn/u/57391284
-// @version      1.0.0.0
-// @author       SakuraMikku
-// @copyright    SakuraMikku
+// @require      https://greasyfork.org/scripts/445358-ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css/code/ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css.js?version=1053244
+// @require      https://code.jquery.com/jquery-3.6.0.min.js
+// @require      https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js
 // @match        *www.bilibili.com/*
 // @match        *://*.bilibili.com/*
 // @match        *message.bilibili.com/*
@@ -32,13 +39,6 @@
 // @exclude      *cm.bilibili.com/quests/*
 // @exclude      *member.bilibili.com/platform*
 // @exclude      *pay.bilibili.com/pay-v2-web*
-// @QQgroup      793513923
-// @QQgroup      https://jq.qq.com/?_wv=1027&k=0ewDiWw1
-// @grant        none
-// @require      https://greasyfork.org/scripts/445358-ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css/code/ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css.js?version=1053244
-// @require      https://code.jquery.com/jquery-3.6.0.min.js
-// @require      https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js
-// @namespace https://greasyfork.org/users/599643
 // ==/UserScript==
 
 "use strict";
