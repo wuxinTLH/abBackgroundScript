@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         AB站网页背景更改
 // @namespace    SakuraBackgroundScript
-// @description  更改ab站背景的脚本，第三代版本，进一步优化代码
+// @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
 // @version      1.0.0.0
 // @author       SakuraMikku
-// @copyright    2023-2099,SakuraMikku
+// @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
 // @QQgroup      793513923
 // @QQgroup      https://jq.qq.com/?_wv=1027&k=0ewDiWw1
@@ -209,18 +209,15 @@ window.onload = () => {
     /**
      * 
      * @example
-     *     // 使用示例
-     *  let api = IndexedDBAPI();
-     *  let imageUrl = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QCMRXhpZgAATU0AKgAAAAgAA1EQAAEAAAABAA..." // 这里是base64格式的图片URL
-     *  api.addBackgroundURL(imageUrl);
-     *  console.log(api.getBackgroundURL());
-     *  console.log(api.addBackgroundURL("https://example.com/background.jpg")); // true
-     *  
-     *  console.log(api.getBackgroundURL()); // https://example.com/background.jpg
-     *  
-     *  console.log(api.updateBackgroundURL("https://example.com/new-background.jpg")); // true
-     *  
-     *  console.log(api.deleteBackgroundURL()); // true
+     * let api = IndexedDBAPI();
+     * api.addBackgroundURL(imageUrl);
+     * console.log(api.getBackgroundURL());
+     * console.log(api.addBackgroundURL("https://example.com/background.jpg")); // true
+     * 
+     * api.getBackgroundURL(function (url) {
+     *     console.log(url);
+     * })
+     * console.log(api.deleteBackgroundURL()); // true
      */
     function IndexedDBAPI() {
         let db;
@@ -247,7 +244,7 @@ window.onload = () => {
 
         return {
             addBackgroundURL: function (url) {
-                let chunkSize = 10 * 1024 * 1024; // 设置分片大小
+                let chunkSize = 5 * 1024 * 1024; // 设置分片大小
                 let chunks = [];
                 for (let i = 0; i < url.length; i += chunkSize) {
                     chunks.push(url.slice(i, i + chunkSize));
@@ -255,12 +252,17 @@ window.onload = () => {
 
                 let transaction = db.transaction([storeName], "readwrite");
                 let objectStore = transaction.objectStore(storeName);
+
+                // 先清空原来的内容
+                objectStore.clear();
+
+                // 添加新的内容
                 chunks.forEach(function (chunk, index) {
                     objectStore.add({ id: index, data: chunk });
                 });
                 return true;
             },
-            getBackgroundURL: function () {
+            getBackgroundURL: function (callback) {
                 let transaction = db.transaction([storeName], "readonly");
                 let objectStore = transaction.objectStore(storeName);
                 let chunks = [];
@@ -272,20 +274,12 @@ window.onload = () => {
                         cursor.continue();
                     } else {
                         let url = chunks.join('');
-                        operationResult = url;
+                        callback(url);
                     }
                 };
                 request.onerror = function (event) {
-                    operationResult = '';
+                    callback('');
                 };
-                return operationResult;
-            },
-            updateBackgroundURL: function (url) {
-                let transaction = db.transaction([storeName], "readwrite");
-                let objectStore = transaction.objectStore(storeName);
-                objectStore.clear();
-                this.addBackgroundURL(url);
-                return true;
             },
             deleteBackgroundURL: function () {
                 let transaction = db.transaction([storeName], "readwrite");
@@ -298,7 +292,6 @@ window.onload = () => {
             }
         };
     }
-
 
 
     //#endregion
