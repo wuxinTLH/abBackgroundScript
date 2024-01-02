@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         AB站网页背景更改
+// @namespace    SakuraBackgroundScript
 // @description  更改ab站背景的脚本，第三代版本，进一步优化代码
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
 // @version      1.0.0.0
 // @author       SakuraMikku
-// @copyright    SakuraMikku
+// @copyright    2023-2099,SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
 // @QQgroup      793513923
 // @QQgroup      https://jq.qq.com/?_wv=1027&k=0ewDiWw1
@@ -205,6 +206,100 @@ window.onload = () => {
         let url = window.localStorage.getItem('bcurl');
         return url;
     }
+    /**
+     * 
+     * @example
+     *     // 使用示例
+     *  let api = IndexedDBAPI();
+     *  let imageUrl = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QCMRXhpZgAATU0AKgAAAAgAA1EQAAEAAAABAA..." // 这里是base64格式的图片URL
+     *  api.addBackgroundURL(imageUrl);
+     *  console.log(api.getBackgroundURL());
+     *  console.log(api.addBackgroundURL("https://example.com/background.jpg")); // true
+     *  
+     *  console.log(api.getBackgroundURL()); // https://example.com/background.jpg
+     *  
+     *  console.log(api.updateBackgroundURL("https://example.com/new-background.jpg")); // true
+     *  
+     *  console.log(api.deleteBackgroundURL()); // true
+     */
+    function IndexedDBAPI() {
+        let db;
+        const dbName = 'backgroundURL';
+        const storeName = 'bcurl';
+        let operationResult;
+
+        let request = indexedDB.open(dbName, 1);
+
+        request.onerror = function (event) {
+            console.error("Database error: " + event.target.errorCode);
+        };
+
+        request.onsuccess = function (event) {
+            db = event.target.result;
+        };
+
+        request.onupgradeneeded = function (event) {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                let objectStore = db.createObjectStore(storeName, { keyPath: "id" });
+            }
+        };
+
+        return {
+            addBackgroundURL: function (url) {
+                let chunkSize = 10 * 1024 * 1024; // 设置分片大小
+                let chunks = [];
+                for (let i = 0; i < url.length; i += chunkSize) {
+                    chunks.push(url.slice(i, i + chunkSize));
+                }
+
+                let transaction = db.transaction([storeName], "readwrite");
+                let objectStore = transaction.objectStore(storeName);
+                chunks.forEach(function (chunk, index) {
+                    objectStore.add({ id: index, data: chunk });
+                });
+                return true;
+            },
+            getBackgroundURL: function () {
+                let transaction = db.transaction([storeName], "readonly");
+                let objectStore = transaction.objectStore(storeName);
+                let chunks = [];
+                let request = objectStore.openCursor();
+                request.onsuccess = function (event) {
+                    let cursor = event.target.result;
+                    if (cursor) {
+                        chunks.push(cursor.value.data);
+                        cursor.continue();
+                    } else {
+                        let url = chunks.join('');
+                        operationResult = url;
+                    }
+                };
+                request.onerror = function (event) {
+                    operationResult = '';
+                };
+                return operationResult;
+            },
+            updateBackgroundURL: function (url) {
+                let transaction = db.transaction([storeName], "readwrite");
+                let objectStore = transaction.objectStore(storeName);
+                objectStore.clear();
+                this.addBackgroundURL(url);
+                return true;
+            },
+            deleteBackgroundURL: function () {
+                let transaction = db.transaction([storeName], "readwrite");
+                let objectStore = transaction.objectStore(storeName);
+                objectStore.clear();
+                return true;
+            },
+            closeConnection: function () {
+                db.close();
+            }
+        };
+    }
+
+
 
     //#endregion
 }
