@@ -16,6 +16,7 @@
 // @githubBoke   https://wuxintlh.github.io
 // @acfun        https://www.acfun.cn/u/57391284
 // @require      https://greasyfork.org/scripts/445358-ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css/code/ab%E7%AB%99%E8%83%8C%E6%99%AF%E6%9B%B4%E6%94%B9css.js?version=1053244
+// @require      https://update.greasyfork.org/scripts/483725/1305374/%E6%B5%8F%E8%A7%88%E5%99%A8%E6%95%B0%E6%8D%AE%E5%BA%93API.js
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js
 // @match        *www.bilibili.com/*
