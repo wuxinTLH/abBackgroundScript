@@ -65,11 +65,33 @@ window.onload = () => {
             abChosen = "acfun";
             liveFlag = false
         }
-        //初始化backgroundBox
+        //default_background_urls考虑采用http请求一个接口来获取默认图片地址
+        let default_background_urls = {
+            'bili': [
+                'https://i0.hdslb.com/bfs/article/d12fee446e2533206e0b04024c39e00a40c4bc4c.png@1320w_912h.webp',
+                'https://i0.hdslb.com/bfs/article/54616fdbb9bed40ea2cf8540f8517b11c9aa4ad3.jpg@1320w_868h.webp',
+                'https://img1.imgtp.com/2022/05/19/qqKLSTQo.png',
+                'https://i0.hdslb.com/bfs/album/658ab52e2d631f9d974112e2d5b4cab476e3f61d.jpg',
+                'https://i0.hdslb.com/bfs/vc/c255f51c594cf6e724fb9f04975fae7e7eb8b876.jpg@2000w_1e.webp',
+                'https://w.wallhaven.cc/full/o3/wallhaven-o31p97.jpg'
+            ],
+            'acfun': [
+                'https://w.wallhaven.cc/full/g8/wallhaven-g8kd37.jpg',
+                'https://img.tt98.com/d/file/96kaifa/201905101622281/001.jpg',
+                'https://img.tt98.com/d/file/tt98/2019092618001803/001.jpg',
+                'https://w.wallhaven.cc/full/g7/wallhaven-g79ov3.jpg',
+                'https://w.wallhaven.cc/full/rd/wallhaven-rdyyjm.png',
+                'https://w.wallhaven.cc/full/o3/wallhaven-o31p97.jpg'
+            ]
+        }
+        //初始化bckgroundBox
         setBackgroundBox(abChosen);
         //将backgroundBox进行vue绑定
         let BackgroundBoxVue = new Vue({
             el: '#sakuraBackgroundBox',
+            data: {
+                default_url: default_background_urls[abChosen],
+            },
             methods: {
                 displayChangeBox: function () {
                     let changeBox = $('.ChangeBox');
@@ -98,6 +120,11 @@ window.onload = () => {
                         }
                     } else {
                         alert("请上传一张图片");
+                    }
+                },
+                deleteURL: function () {
+                    if (confirm("确定要删除背景吗？")) {
+                        //调用indexedDBAPI,删除URL或图片base64格式
                     }
                 }
             }
@@ -136,6 +163,7 @@ window.onload = () => {
             <button id="diySubmit" v-on:click="diyBackgroundChange()">点击修改</button>
             <input type="file" name="" id="base64Pic">
             <button id="diySubmit" v-on:click="diyBase64Change()">点击修改</button>
+            <button id="diySubmit" v-on:click="deleteURL()">删除URL</button>
         </div>
     </div>
     `;
@@ -164,7 +192,7 @@ window.onload = () => {
      */
     function getElBody(abChosen) {
         let elBody;
-        if (ab_chosen == "bili") {
+        if (abChosen == "bili") {
             if ($("#app").length > 0) {
                 elBody = "#app";
             } else {
@@ -182,23 +210,93 @@ window.onload = () => {
 
 
     //主程序 设置背景
-
+    /**
+     * 
+     * @param {String} url - 图片url或base64
+     * @param {*} abChosen 
+     */
     function setBackgroundImage(url, abChosen) {
+        let sakuraBackgroundElement, body = $("body")[0];
 
+        // 尝试保存地址，如果没有保存成功，则不会进行接下来的代码
+        let api = IndexedDBAPI();
+        let saveResult = api.addBackgroundURL(url);
+        if (!saveResult) {
+            logSakuraBackgroundInfo("保存失败,在写入数据库时发生错误,没有任何背景受到更改");
+            return;
+        }
+
+        if (abChosen == "bili") {
+            if ($("#app").length > 0) {
+                sakuraBackgroundElement = "#app";
+            } else {
+                if ($(".sakuraBackground").length > 0) {
+                    // 存在就直接使用
+                    sakuraBackgroundElement = ".sakuraBackground";
+                } else {
+                    // 不存在就创建一个
+                    let div = document.createElement("div")
+                    body.appendChild(div);
+                    div.className = "sakuraBackground";
+                    sakuraBackgroundElement = "sakuraBackground";
+                }
+            }
+            $(sakuraBackgroundElement).css({
+                'background': 'url(' + url + ')',
+                'background-repeat': 'no-repeat',
+                'position': 'fixed',
+                'background-position': 'center center',
+                'background-size': 'cover',
+                'zoom': '1',
+                'width': '100%',
+                'height': '100%',
+                'top': '0',
+                'left': '0',
+                'webkit-background-size': 'cover',
+                'z-index': '-1',
+                'class': 'SakuraBackground'
+            });
+        } else if (abChosen == "acfun") {
+            if ($('#main').length > 0) {
+                sakuraBackgroundElement = "#main";
+            } else {
+                if ($(".sakuraBackground").length > 0) {
+                    // 存在就直接使用
+                    sakuraBackgroundElement = ".sakuraBackground";
+                } else {
+                    // 不存在就创建一个
+                    let div = document.createElement("div")
+                    body.appendChild(div);
+                    div.className = "sakuraBackground";
+                    sakuraBackgroundElement = "sakuraBackground";
+                }
+            }
+            $(sakuraBackgroundElement).css({
+                'background-image': 'url(' + url + ')',
+                'background-repeat': 'no-repeat',
+                'position': 'fixed',
+                'background-position': 'center center',
+                'background-size': 'cover',
+                'zoom': '1',
+                'width': '100%',
+                'height': '100%',
+                'top': '0',
+                'left': '0',
+                'webkit-background-size': 'cover',
+                'z-index': '-1',
+                'class': 'SakuraBackground'
+            });
+        }
+        // setDivClassSakuraBackground(url, elBody);
     }
 
     //背景div生成
-    function setDivClassSakuraBackground(elBody) { }
+    function setDivClassSakuraBackground(url, elBody) {
+        if ($('#sakuraBackground')) {
 
-    /**
-     * 在window的localStorage中存储url或base64值
-     * @param {String} url 
-     */
-    function setBcurl(url) {
-        if (url) {
-            window.localStorage.setItem('bcurl', url);
         }
     }
+
 
     /**
      * @returns {String} 返回一个url或base64值
@@ -207,93 +305,34 @@ window.onload = () => {
         let url = window.localStorage.getItem('bcurl');
         return url;
     }
+    //indexedDBAPI转移至js中,使用require调用相应js
+
     /**
-     * 
-     * @example
-     * let api = IndexedDBAPI();
-     * api.addBackgroundURL(imageUrl);
-     * console.log(api.getBackgroundURL());
-     * console.log(api.addBackgroundURL("https://example.com/background.jpg")); // true
-     * 
-     * api.getBackgroundURL(function (url) {
-     *     console.log(url);
-     * })
-     * console.log(api.deleteBackgroundURL()); // true
+     * @name 首次信息提示
+     * @description 首次alert会提示脚本注意事项,并且在每次脚本启动时,都会在控制台中打印提示信息
+     * @returns {void}
      */
-    function IndexedDBAPI() {
-        let db;
-        const dbName = 'backgroundURL';
-        const storeName = 'bcurl';
-        let operationResult;
-
-        let request = indexedDB.open(dbName, 1);
-
-        request.onerror = function (event) {
-            console.error("Database error: " + event.target.errorCode);
-        };
-
-        request.onsuccess = function (event) {
-            db = event.target.result;
-        };
-
-        request.onupgradeneeded = function (event) {
-            db = event.target.result;
-            if (!db.objectStoreNames.contains(storeName)) {
-                let objectStore = db.createObjectStore(storeName, { keyPath: "id" });
-            }
-        };
-
-        return {
-            addBackgroundURL: function (url) {
-                let chunkSize = 5 * 1024 * 1024; // 设置分片大小
-                let chunks = [];
-                for (let i = 0; i < url.length; i += chunkSize) {
-                    chunks.push(url.slice(i, i + chunkSize));
-                }
-
-                let transaction = db.transaction([storeName], "readwrite");
-                let objectStore = transaction.objectStore(storeName);
-
-                // 先清空原来的内容
-                objectStore.clear();
-
-                // 添加新的内容
-                chunks.forEach(function (chunk, index) {
-                    objectStore.add({ id: index, data: chunk });
-                });
-                return true;
-            },
-            getBackgroundURL: function (callback) {
-                let transaction = db.transaction([storeName], "readonly");
-                let objectStore = transaction.objectStore(storeName);
-                let chunks = [];
-                let request = objectStore.openCursor();
-                request.onsuccess = function (event) {
-                    let cursor = event.target.result;
-                    if (cursor) {
-                        chunks.push(cursor.value.data);
-                        cursor.continue();
-                    } else {
-                        let url = chunks.join('');
-                        callback(url);
-                    }
-                };
-                request.onerror = function (event) {
-                    callback('');
-                };
-            },
-            deleteBackgroundURL: function () {
-                let transaction = db.transaction([storeName], "readwrite");
-                let objectStore = transaction.objectStore(storeName);
-                objectStore.clear();
-                return true;
-            },
-            closeConnection: function () {
-                db.close();
-            }
-        };
+    function checkSakuraBackgroundInfoAlert() {
+        // 检查 localStorage 中的键值对
+        let alertShown = localStorage.getItem("SakuraBackgroundInfoAlert");
+        let info = `特别提示:本脚本受图片质量影响,如果使用过大图片,容易使indexedDB读取缓慢,
+        浏览器性能极大下降,请谨慎使用本地图片.网络图片不会影响,但受网络速率,是否有墙等因素影响.
+        脚本作者:SakuraMikku.有问题请在脚本界面查询联系或反馈方式`;
+        if (!alertShown) {
+            alert(info);
+            localStorage.setItem("SakuraBackgroundInfoAlert", "true");
+        }
+        console.log(`[SakuraBackgroundInfo]  ${info}`)
     }
-
+    /**
+     * @name 封装的console.log
+     * @description 用于输出脚本信息
+     * @param  {...any} args 
+     */
+    function logSakuraBackgroundInfo(...args) {
+        let prefixedArgs = args.map(arg => "[SakuraBackgroundInfo] " + arg);
+        console.log.apply(this, prefixedArgs);
+    }
 
     //#endregion
 }

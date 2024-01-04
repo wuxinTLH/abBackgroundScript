@@ -8,6 +8,12 @@
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // ==UserScript==
+
+/**
+ * @name IndexedDBAPI
+ * @description 判断用户使用的浏览器,并调用相应数据库,存储图片地址或图片base64格式
+ * @returns {IndexedDBAPI}
+ */
 function IndexedDBAPI() {
     let db;
     const dbName = 'backgroundURL';
@@ -17,6 +23,11 @@ function IndexedDBAPI() {
     if (!indexedDB) {
         // 如果不支持IndexedDB，则使用window.localStorage
         return {
+            /**
+             * 
+             * @param {String} url 
+             * @returns {Boolean}
+             */
             addBackgroundURL: function (url) {
                 try {
                     let remainingSpace = 5 * 1024 * 1024 - new Blob([JSON.stringify(localStorage)]).size;
@@ -30,10 +41,20 @@ function IndexedDBAPI() {
                 }
                 return true;
             },
+            /**
+             * 
+             * @param {callback} callback
+             * @returns {void}
+             * @description 请在回调函数中获取callback函数的返回值
+             */
             getBackgroundURL: function (callback) {
                 let url = localStorage.getItem(storeName);
                 callback(url);
             },
+            /**
+             * 
+             * @returns {void}
+             */
             deleteBackgroundURL: function () {
                 localStorage.removeItem(storeName);
             },
@@ -58,6 +79,11 @@ function IndexedDBAPI() {
         };
 
         return {
+            /**
+            * 
+            * @param {String} url 
+            * @returns {Boolean}
+            */
             addBackgroundURL: function (url) {
                 let chunkSize = 5 * 1024 * 1024; // 设置分片大小
                 let chunks = [];
@@ -79,6 +105,12 @@ function IndexedDBAPI() {
 
                 return true;
             },
+            /**
+            * 
+            * @param {callback} callback
+            * @returns {void}
+            * @description 请在回调函数中获取callback函数的返回值
+            */
             getBackgroundURL: function (callback) {
                 let transaction = db.transaction([storeName], "readonly");
                 let objectStore = transaction.objectStore(storeName);
@@ -101,6 +133,10 @@ function IndexedDBAPI() {
                     callback('');
                 };
             },
+            /**
+            * 
+            * @returns {void}
+            */
             deleteBackgroundURL: function () {
                 let transaction = db.transaction([storeName], "readwrite");
                 let objectStore = transaction.objectStore(storeName);
