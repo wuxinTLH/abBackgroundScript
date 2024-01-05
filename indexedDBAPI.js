@@ -1,13 +1,17 @@
-// ==UserScript==
-// @name         浏览器数据库API
-// @namespace    IndexedDBAPI
-// @description  浏览器数据库API
-// @icon         http://github.smiku.site/sakura.png
-// @license      MIT
-// @version      1.0.0.0
-// @author       SakuraMikku
-// @copyright    2023-2099, SakuraMikku
-// ==UserScript==
+/*
+* @name         浏览器数据库API
+* @namespace    IndexedDBAPI
+* @description  浏览器数据库API
+* @icon         http://github.smiku.site/sakura.png
+* @license      MIT
+* @version      1.0.0.0
+* @author       SakuraMikku
+* @copyright    2023-2099, SakuraMikku
+*/
+function logSakuraBackgroundInfo(...args) {
+    let prefixedArgs = args.map(arg => "[SakuraBackgroundInfo] " + arg);
+    console.log.apply(this, prefixedArgs);
+}
 
 /**
  * @name IndexedDBAPI
@@ -21,13 +25,7 @@ function IndexedDBAPI() {
     let operationResult;
     let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
     if (!indexedDB) {
-        // 如果不支持IndexedDB，则使用window.localStorage
         return {
-            /**
-             * 
-             * @param {String} url 
-             * @returns {Boolean}
-             */
             addBackgroundURL: function (url) {
                 try {
                     let remainingSpace = 5 * 1024 * 1024 - new Blob([JSON.stringify(localStorage)]).size;
@@ -37,34 +35,29 @@ function IndexedDBAPI() {
                     localStorage.setItem(storeName, url);
                 } catch (error) {
                     alert(error);
+                    logSakuraBackgroundInfo("[ERROR] " + error);
                     return false;
                 }
                 return true;
             },
-            /**
-             * 
-             * @param {callback} callback
-             * @returns {void}
-             * @description 请在回调函数中获取callback函数的返回值
-             */
             getBackgroundURL: function (callback) {
                 let url = localStorage.getItem(storeName);
                 callback(url);
             },
-            /**
-             * 
-             * @returns {void}
-             */
             deleteBackgroundURL: function () {
-                localStorage.removeItem(storeName);
+                try {
+                    localStorage.removeItem(storeName);
+                    logSakuraBackgroundInfo("Background URL deleted successfully from localStorage.");
+                } catch (error) {
+                    logSakuraBackgroundInfo("[ERROR] Failed to delete background URL from localStorage: " + error);
+                }
             },
         };
     } else {
         let request = indexedDB.open(dbName, 1);
 
-
         request.onerror = function (event) {
-            console.error("Database error: " + event.target.errorCode);
+            logSakuraBackgroundInfo("[ERROR] Database error: " + event.target.errorCode);
         };
 
         request.onsuccess = function (event) {
@@ -79,13 +72,8 @@ function IndexedDBAPI() {
         };
 
         return {
-            /**
-            * 
-            * @param {String} url 
-            * @returns {Boolean}
-            */
             addBackgroundURL: function (url) {
-                let chunkSize = 5 * 1024 * 1024; // 设置分片大小
+                let chunkSize = 5 * 1024 * 1024;
                 let chunks = [];
                 for (let i = 0; i < url.length; i += chunkSize) {
                     chunks.push(url.slice(i, i + chunkSize));
@@ -93,11 +81,8 @@ function IndexedDBAPI() {
 
                 let transaction = db.transaction([storeName], "readwrite");
                 let objectStore = transaction.objectStore(storeName);
-
-                // 先清空原来的内容
                 objectStore.clear();
 
-                // 添加新的内容
                 chunks.forEach(function (chunk, index) {
                     objectStore.add({ id: index, data: chunk });
                 });
@@ -105,12 +90,6 @@ function IndexedDBAPI() {
 
                 return true;
             },
-            /**
-            * 
-            * @param {callback} callback
-            * @returns {void}
-            * @description 请在回调函数中获取callback函数的返回值
-            */
             getBackgroundURL: function (callback) {
                 let transaction = db.transaction([storeName], "readonly");
                 let objectStore = transaction.objectStore(storeName);
@@ -133,14 +112,19 @@ function IndexedDBAPI() {
                     callback('');
                 };
             },
-            /**
-            * 
-            * @returns {void}
-            */
             deleteBackgroundURL: function () {
                 let transaction = db.transaction([storeName], "readwrite");
                 let objectStore = transaction.objectStore(storeName);
-                objectStore.clear();
+                let request = objectStore.clear();
+
+                request.onsuccess = function () {
+                    logSakuraBackgroundInfo("Background URL deleted successfully.");
+                };
+
+                request.onerror = function (event) {
+                    logSakuraBackgroundInfo("[ERROR] Failed to delete background URL: " + event.target.errorCode);
+                };
+
                 this.closeConnection();
                 return true;
             },
@@ -149,7 +133,6 @@ function IndexedDBAPI() {
             }
         };
     }
-
 }
 
 // 使用示例
@@ -180,3 +163,4 @@ if (deleteResult) {
 } else {
     console.error('Failed to delete background URL');
 }
+
