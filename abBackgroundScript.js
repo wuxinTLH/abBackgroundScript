@@ -54,7 +54,9 @@ var defaultBackgroundURLS = [
 
 window.onload = () => {
     firstTimeInfoAlert();
-    init();
+    setTimeout(() => {
+        init();
+    }, 5000)
 }
 //#region 封装方法
 /**
@@ -88,29 +90,29 @@ function init() {
     // sakuraBackgroundBox.id = 'sakuraBackgroundBox';
     rootBody.append(rootDiv);
     rootDiv.innerHTML = `
-    <div id="showSakuraBackgroundBox" alt="点击弹出修改背景的窗口" onclick="showSakuraBackgroundBox()">
+    <div id="showSakuraBackgroundBox" alt="点击弹出修改背景的窗口">
         背景更改
     </div>
     <div id="sakuraBackgroundBox">
         <div class="defaultImg">
             <ul>
-                <li><img src="" alt="" onclick="defaultChangeBackground(0)"></li>
-                <li><img src="" alt="" onclick="defaultChangeBackground(1)"></li>
-                <li><img src="" alt="" onclick="defaultChangeBackground(2)"></li>
-                <li><img src="" alt="" onclick="defaultChangeBackground(3)"></li>
+                <li><img src="" alt="默认背景"></li>
+                <li><img src="" alt="默认背景"></li>
+                <li><img src="" alt="默认背景"></li>
+                <li><img src="" alt="默认背景"></li>
             </ul>
         </div>
         <div class="imgUrl">
             <input type="text" class="bcgUrl" placeholder="请输入背景图片地址">
-            <button class="bcgUrlChange" onclick="changeBackgroundByUrl()">点击修改背景</button>
+            <button class="bcgUrlChange">点击修改背景</button>
         </div>
         <div class="imgLocal">
             <input type="file" name="" id="" class="bcgImgLocal" accept="image/*">
-            <button class="bcgLocalChange" onclick="changeBackgroundByBase64()">点击修改背景</button>
+            <button class="bcgLocalChange">点击修改背景</button>
         </div>
         <div class="infoHandle">
-            <button class="handleInfoBtn" onclick="alertInfoByHandle()">手动提示信息</button>
-            <button class="handleInfoBtn" onclick="delBackgroundByHandle()">手动删除背景存储</button>
+            <button class="handleInfoBtn">手动提示信息</button>
+            <button class="handleInfoBtn">手动删除背景存储</button>
         </div>
     </div>
     `
@@ -124,6 +126,7 @@ function init() {
         background-color: rgb(137, 204, 231);
         bottom: 0;
         left: 0;
+        z-index:999;
         font-size: 1.75rem;
         font-weight: bold;
         padding-left: 6px;
@@ -139,6 +142,8 @@ function init() {
         max-height: 600px;
         position: fixed;
         bottom: 24px;
+        z-index:999;
+        display: none;
         background-color: aquamarine;
         border-top-right-radius: 24px;
         border-bottom-right-radius: 24px;
@@ -243,18 +248,18 @@ function init() {
     }
     //初始化盒子中的脚本
     //显示或隐藏按钮
-    let showSakuraBackgroundBoxNode = $('#showSakuraBackgroundBox');
+    let showSakuraBackgroundBoxNode = $('#showSakuraBackgroundBox')[0];
     showSakuraBackgroundBoxNode.addEventListener('click', showSakuraBackgroundBox);
     //以url修改背景按钮
-    let bcgUrlChangeNode = $('.bcgUrlChange');
-    bcgUrlChange.addEventListener('click', changeBackgroundByUrl);
+    let bcgUrlChangeNode = $('.bcgUrlChange')[0];
+    bcgUrlChangeNode.addEventListener('click', changeBackgroundByUrl);
     //以base64修改背景按钮
-    let bcgLocalChangeNode = $('.bcgLocalChange');
+    let bcgLocalChangeNode = $('.bcgLocalChange')[0];
     bcgLocalChangeNode.addEventListener('click', changeBackgroundByBase64);
     //handleInfoBtn两个按钮
     let handleInfoBtnNodes = document.querySelectorAll('.handleInfoBtn');
-    handleInfoBtnNodes[0].addEventListener('clicl', alertInfoByHandle);
-    handleInfoBtnNodes[1].addEventListener('clicl', delBackgroundByHandle);
+    handleInfoBtnNodes[0].addEventListener('click', alertInfoByHandle);
+    handleInfoBtnNodes[1].addEventListener('click', delBackgroundByHandle);
 
     //#region 盒子中需要的脚本的封装方法
     /**
@@ -279,7 +284,7 @@ function init() {
      */
     function defaultChangeBackground(src) {
         //调用setSakuraBackground修改背景
-        setSakuraBackground(src, 'bili');
+        setSakuraBackground(src, isAB);
         //调用logSakuraBackgroundInfo
         logSakuraBackgroundInfo("info", "背景修改成功");
         //调用storageAPI存储图片地址
@@ -294,7 +299,7 @@ function init() {
         if (!url) {
             alert("请输入一张图片地址")
         } else {
-            setSakuraBackground(url, 'bili');
+            setSakuraBackground(url, isAB);
             //调用logSakuraBackgroundInfo
             logSakuraBackgroundInfo("info", "背景修改成功");
             //调用storageAPI存储图片地址
@@ -315,7 +320,7 @@ function init() {
             render.readAsDataURL(file);
             render.onloadend = function () {
                 //设置背景
-                setSakuraBackground(render.result, "bili");
+                setSakuraBackground(render.result, isAB);
                 //调用logSakuraBackgroundInfo
                 logSakuraBackgroundInfo("info", "背景修改成功");
                 //调用storageAPI存储图片
@@ -343,7 +348,16 @@ function init() {
     }
 
     //#endregion
+
     //初始化背景
+    let stAPI = storageAPI("", "get")
+    stAPI.then(res => {
+        if (res) {
+            setSakuraBackground(res, isAB);
+        } else {
+            setSakuraBackground(defaultBackgroundURLS[0], isAB);
+        }
+    });
 
 }
 
