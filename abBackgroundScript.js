@@ -669,9 +669,9 @@ function storageAPI(url, method) {
         if (method == 'add') {
             addBCGURL(url);
         } else if (method == "get") {
-            return getBCGURL(url);
+            return getBCGURL();
         } else if (method == "del") {
-            delBCGURL(url);
+            delBCGURL();
         }
     }
 }
