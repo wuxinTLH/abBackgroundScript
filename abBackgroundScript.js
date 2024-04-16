@@ -357,6 +357,7 @@ function init() {
         } else {
             setSakuraBackground(defaultBackgroundURLS[0], isAB);
         }
+        logSakuraBackgroundInfo("info", "初始化背景完成");
     });
 
 }
@@ -685,6 +686,7 @@ function storageAPI(url, method) {
 function setSakuraBackground(url, isAB) {
     let rootNode, sakuraBackgroundNode;
     if (isAB == "bili") {
+        console.log("b站开始")
         if ($('#app').length > 0) {
             //将节点设定为#app
             rootNode = $('#app');
@@ -698,16 +700,47 @@ function setSakuraBackground(url, isAB) {
                 'webkitBackgroundSize': 'cover',
                 'backgroundAttachment': 'fixed',
             })
+        } else if ($('#i_cecream').length > 0) {
+            rootNode = $('#i_cecream');
+            rootNode.css({
+                "background": "url(" + url + ") center 0px/cover",
+                "backfroundRepeat": "no-repeat",
+                "backgroundPosition": "center center",
+                "backgroundSize": "100% 100%",
+                'zIndex': '-1',
+                'webkitBackgroundSize': 'cover',
+                'backgroundAttachment': 'fixed',
+            })
+        } else if ($('.p-relative main').length > 0) {
+            rootNode = $('.p-relative main');
+            rootNode.css({
+                "background": "url(" + url + ") center 0px/cover",
+                "backfroundRepeat": "no-repeat",
+                "backgroundPosition": "center center",
+                "backgroundSize": "100% 100%",
+                'zIndex': '-1',
+                'webkitBackgroundSize': 'cover',
+                'backgroundAttachment': 'fixed',
+            })
+            //评论区卡片透明
+            let nodes = document.querySelectorAll('.feed-card>.content>div');
+            for (let i = 0; i < nodes.length; i++) {
+                let childNode = nodes[i].children[0];
+                childNode.style.setProperty('background-color', 'rgba(255, 255, 255, 0.2)', 'important');
+            }
         } else {
-            if ($('#sakuraBackground').length == 0) {
+            if ($('#sakuraBackground').length > 0) {
                 //如果已经创建节点,则获取节点
                 sakuraBackgroundNode = $('#sakuraBackground');
             } else {
                 //未创建节点,则创建节点
-                sakuraBackgroundNode = $('<div id="sakuraBackground"></div>');
-                $('body').append(sakuraBackgroundNode);
+                sakuraBackgroundNode = document.createElement('div');
+                document.querySelector('body').appendChild(sakuraBackgroundNode);
+                sakuraBackgroundNode.id = "sakuraBackground";
             }
             //将节点css修改为指定样式
+            sakuraBackgroundNode = $('#sakuraBackgroundNode');
+            console.log("sakuraBackgroundNode", sakuraBackgroundNode)
             sakuraBackgroundNode.css({
                 "background": "url(" + url + ") center 0px/cover",
                 "backfroundRepeat": "no-repeat",
@@ -720,12 +753,23 @@ function setSakuraBackground(url, isAB) {
                 "height": "100%",
                 "top": "0",
                 "left": "0",
-
             })
         }
     } else if (isAB == "acfun") {
-        if ($('#main').length > 0) {
-            //将节点设定为#main
+        if ($('.home-main-content').length > 0) {
+            //将节点设定为.home-main-content
+            rootNode = $('.home-main-content');
+            //将节点css修改为指定样式
+            rootNode.css({
+                "background": 'url(' + url + ') center 0px/cover',
+                "backfroundRepeat": 'no-repeat',
+                "backgroundPosition": 'center center',
+                "backgroundSize": '100% 100%',
+                "zIndex": '-1',
+                "webkitBackgroundSize": 'cover',
+                "backgroundAttachment": "fixed"
+            })
+        } else if ($('#main').length > 0) {
             rootNode = $('#main');
             //将节点css修改为指定样式
             rootNode.css({
@@ -736,18 +780,19 @@ function setSakuraBackground(url, isAB) {
                 "zIndex": '-1',
                 "webkitBackgroundSize": 'cover',
                 "backgroundAttachment": "fixed"
-
             })
         } else {
-            if ($('#sakuraBackground').length == 0) {
+            if ($('#sakuraBackground').length > 0) {
                 //如果已经创建节点,则获取节点
                 sakuraBackgroundNode = $('#sakuraBackground')
             } else {
                 //未创建节点,则创建节点
-                sakuraBackgroundNode = $('<div id="sakuraBackground"></div>')
-                $('body').append(sakuraBackgroundNode);
+                sakuraBackgroundNode = document.createElement('div');
+                document.querySelector('body').appendChild(sakuraBackgroundNode);
+                sakuraBackgroundNode.id = "sakuraBackground";
             }
             //将节点css修改为指定样式
+            sakuraBackgroundNode = $('#sakuraBackgroundNode');
             sakuraBackgroundNode.css({
                 "backgroundImage": 'url(' + url + ')',
                 "backfroundRepeat": 'no-repeat',
