@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.0
+// @version      1.0.0.1
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
