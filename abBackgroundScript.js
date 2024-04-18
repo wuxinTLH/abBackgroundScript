@@ -53,10 +53,16 @@ var defaultBackgroundURLS = [
 //#endregion
 
 window.onload = () => {
-    firstTimeInfoAlert();
-    setTimeout(() => {
-        init();
-    }, 5000)
+    try {
+        firstTimeInfoAlert();
+        setTimeout(() => {
+            init();
+        }, 5000)
+    } catch (e) {
+        logSakuraBackgroundInfo("error", e);
+        logSakuraBackgroundInfo("info", "对报错信息截图反馈作者");
+    }
+
 }
 //#region 封装方法
 /**
@@ -686,7 +692,6 @@ function storageAPI(url, method) {
 function setSakuraBackground(url, isAB) {
     let rootNode, sakuraBackgroundNode;
     if (isAB == "bili") {
-        console.log("b站开始")
         if ($('#app').length > 0) {
             //将节点设定为#app
             rootNode = $('#app');
