@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.4
+// @version      1.0.0.5
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
@@ -43,12 +43,46 @@
 "use strict";
 
 //#region 全局数据存储
+//默认背景地址
 var defaultBackgroundURLS = [
     "https://img2.imgtp.com/2024/04/19/36tGMJgW.png",
     "https://img2.imgtp.com/2024/04/19/1lWtTop9.png",
     "https://img2.imgtp.com/2024/04/19/JffVHaEc.png",
     "https://img2.imgtp.com/2024/04/19/BipHyk4y.png"
 ];
+//#region 用于动态获取背景地址 待完成
+/**
+ * @name getDefaultBackgroundURLS
+ * @description 获取默认背景地址
+ */
+async function getDefaultBackgroundURLS(url = "") {
+    try {
+        let res = await fetchJSON(url);
+        if (res) {
+            return res.data.list;
+        }
+    } catch (err) {
+        logSakuraBackgroundInfo("error", `在获取默认背景地址时出错:${err}`);
+        return null;
+    }
+}
+/**
+ * @name fetchJSON
+ * @description 发送请求获取JSON数据
+ * @param {*} url 
+ * @param {*} method 
+ * @returns 
+ */
+async function fetchJSON(url, method = 'GET') {
+    try {
+        const res = await fetch(url, { method });
+        return res.ok ? await res.json() : null;
+    } catch (err) {
+        logSakuraBackgroundInfo("error", `在发送请求时出错:${err}`);
+        return null;
+    }
+}
+//#endregion
 
 //#endregion
 
@@ -58,11 +92,12 @@ window.onload = () => {
         setTimeout(() => {
             init();
         }, 5000)
+        logSakuraBackgroundInfo("info", "脚本加载完成");
     } catch (e) {
+        logSakuraBackgroundInfo("info", "脚本加载失败");
         logSakuraBackgroundInfo("error", e);
         logSakuraBackgroundInfo("info", "对报错信息截图反馈作者");
     }
-
 }
 //#region 封装方法
 /**
@@ -230,7 +265,7 @@ function init() {
     #sakuraBackgroundBox .infoHandle .handleInfoBtn {
         width: 120px;
         height: 18px;
-        font-size: 14px;
+        font-size: 1rem;
         font-weight: bold;
     }
     `;
@@ -693,13 +728,15 @@ function setSakuraBackground(url, isAB) {
     let rootNode, sakuraBackgroundNode;
     if (isAB == "bili") {
         if ($('#app').length > 0) {
-            //主站点
+            //视频,个人页面等
             //将节点设定为#app
             rootNode = $('#app');
             //将节点css修改为指定样式
         } else if ($('#i_cecream').length > 0) {
+            //网站主页
             rootNode = $('#i_cecream');
         } else if ($('.p-relative main').length > 0) {
+            //评论区
             rootNode = $('.p-relative main');
             //评论区卡片透明
             let nodes = document.querySelectorAll('.feed-card>.content>div');
@@ -721,10 +758,7 @@ function setSakuraBackground(url, isAB) {
             sakuraBackgroundNode = $('#sakuraBackgroundNode');
             console.log("sakuraBackgroundNode", sakuraBackgroundNode)
             sakuraBackgroundNode.css({
-                "background": "url(" + url + ") center 0px/cover",
-                "backfroundRepeat": "no-repeat",
-                "backgroundPosition": "center center",
-                "backgroundSize": "100% 100%",
+                "background": "url(" + url + ") no-repeat center center / 100% 100%",
                 'zIndex': '-1',
                 'webkitBackgroundSize': 'cover',
                 'backgroundAttachment': 'fixed',
@@ -733,35 +767,36 @@ function setSakuraBackground(url, isAB) {
                 "top": "0",
                 "left": "0",
             })
+            sakuraBackgroundNode[0].style.backgroundSize = "100% 100%";
         }
         rootNode.css({
-            "background": "url(" + url + ") center 0px/cover",
-            "backfroundRepeat": "no-repeat",
-            "backgroundPosition": "center center",
-            "backgroundSize": "100% 100%",
+            "background": "url(" + url + ") no-repeat center center / 100% 100%",
             'zIndex': '-1',
             'webkitBackgroundSize': 'cover',
             'backgroundAttachment': 'fixed',
         })
+        console.log(rootNode);
+        rootNode[0].style.backgroundSize = "100% 100%";
     } else if (isAB == "acfun") {
         if ($('.home-main-content').length > 0) {
+            //网站主页
             //将节点设定为.home-main-content
             rootNode = $('.home-main-content');
             //将节点css修改为指定样式
         } else if ($('.search__main').length > 0) {
             //搜索
             rootNode = $('.search__main');
-            //将节点css修改为指定样式
         } else if ($('div.list-container').length > 0) {
             //直播
             rootNode = $('div.list-container');
-            //将节点css修改为指定样式
         } else if ($('#main').length > 0) {
+            //视频页面
             rootNode = $('#main');
-            //将节点css修改为指定样式
         } else if ($('#app .layout').length > 0) {
+            //个人页面
             rootNode = $('#app .layout');
         } else if ($('#ac-space').length > 0) {
+            //他人页面
             rootNode = $('#ac-space');
         } else {
             if ($('#sakuraBackground').length > 0) {
@@ -773,14 +808,10 @@ function setSakuraBackground(url, isAB) {
                 document.querySelector('body').appendChild(sakuraBackgroundNode);
                 sakuraBackgroundNode.id = "sakuraBackground";
             }
-            //将节点css修改为指定样式
             sakuraBackgroundNode = $('#sakuraBackgroundNode');
             sakuraBackgroundNode.css({
-                "backgroundImage": 'url(' + url + ')',
-                "backfroundRepeat": 'no-repeat',
-                "position": 'fixed',
-                "backgroundPosition": 'center center',
-                "backgroundSize": 'cover',
+                "background": "url(" + url + ") no-repeat center center / 100% 100%",
+                "backgroundAttachment": 'fixed',
                 "zoom": '1',
                 "width": '100%',
                 "height": '100%',
@@ -789,16 +820,17 @@ function setSakuraBackground(url, isAB) {
                 "webkitBackgroundSize": 'cover',
                 "zIndex": '-1'
             })
+            sakuraBackgroundNode[0].style.backgroundSize = "100% 100%";
         }
+        //将节点css修改为指定样式
         rootNode.css({
-            "background": "url(" + url + ") center 0px/cover",
-            "backfroundRepeat": "no-repeat",
-            "backgroundPosition": "center center",
-            "backgroundSize": "100% 100%",
+            "background": "url(" + url + ") no-repeat center center / 100% 100%",
             'zIndex': '-1',
             'webkitBackgroundSize': 'cover',
             'backgroundAttachment': 'fixed',
         })
+        //由于jq无法修改backgroundSize，所以使用原生js设置BackgroundSize
+        rootNode[0].style.backgroundSize = "100% 100%";
     }
 }
 /**
