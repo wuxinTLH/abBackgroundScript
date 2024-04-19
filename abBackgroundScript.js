@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.2
+// @version      1.0.0.4
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
@@ -44,10 +44,10 @@
 
 //#region 全局数据存储
 var defaultBackgroundURLS = [
-    "https://w.wallhaven.cc/full/we/wallhaven-werdv6.png",
-    "https://w.wallhaven.cc/full/vq/wallhaven-vqr7dl.jpg",
-    "https://w.wallhaven.cc/full/8o/wallhaven-8oqe1j.png",
-    "https://w.wallhaven.cc/full/7p/wallhaven-7pqy6v.png"
+    "https://img2.imgtp.com/2024/04/19/36tGMJgW.png",
+    "https://img2.imgtp.com/2024/04/19/1lWtTop9.png",
+    "https://img2.imgtp.com/2024/04/19/JffVHaEc.png",
+    "https://img2.imgtp.com/2024/04/19/BipHyk4y.png"
 ];
 
 //#endregion
@@ -759,6 +759,10 @@ function setSakuraBackground(url, isAB) {
         } else if ($('#main').length > 0) {
             rootNode = $('#main');
             //将节点css修改为指定样式
+        } else if ($('#app .layout').length > 0) {
+            rootNode = $('#app .layout');
+        } else if ($('#ac-space').length > 0) {
+            rootNode = $('#ac-space');
         } else {
             if ($('#sakuraBackground').length > 0) {
                 //如果已经创建节点,则获取节点
