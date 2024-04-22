@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.5
+// @version      1.0.0.6
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
@@ -83,20 +83,22 @@ async function fetchJSON(url, method = 'GET') {
     }
 }
 //#endregion
-
 //#endregion
 
 window.onload = () => {
     try {
+        //初始化脚本
         firstTimeInfoAlert();
+        //设置延时
         setTimeout(() => {
+            //初始化
             init();
-        }, 5000)
+        }, 5000);
         logSakuraBackgroundInfo("info", "脚本加载完成");
     } catch (e) {
         logSakuraBackgroundInfo("info", "脚本加载失败");
         logSakuraBackgroundInfo("error", e);
-        logSakuraBackgroundInfo("info", "对报错信息截图反馈作者");
+        logSakuraBackgroundInfo("info", "对上方报错信息截图反馈作者");
     }
 }
 //#region 封装方法
@@ -771,7 +773,6 @@ function setSakuraBackground(url, isAB) {
         }
         rootNode.css({
             "background": "url(" + url + ") no-repeat center center / 100% 100%",
-            'zIndex': '-1',
             'webkitBackgroundSize': 'cover',
             'backgroundAttachment': 'fixed',
         })
@@ -825,7 +826,6 @@ function setSakuraBackground(url, isAB) {
         //将节点css修改为指定样式
         rootNode.css({
             "background": "url(" + url + ") no-repeat center center / 100% 100%",
-            'zIndex': '-1',
             'webkitBackgroundSize': 'cover',
             'backgroundAttachment': 'fixed',
         })
