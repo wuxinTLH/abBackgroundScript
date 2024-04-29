@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.6
+// @version      1.0.0.7
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
@@ -69,9 +69,9 @@ async function getDefaultBackgroundURLS(url = "") {
 /**
  * @name fetchJSON
  * @description 发送请求获取JSON数据
- * @param {*} url 
- * @param {*} method 
- * @returns 
+ * @param {*} url
+ * @param {*} method
+ * @returns
  */
 async function fetchJSON(url, method = 'GET') {
     try {
@@ -93,7 +93,7 @@ window.onload = () => {
         setTimeout(() => {
             //初始化
             init();
-        }, 5000);
+        }, 5);
         logSakuraBackgroundInfo("info", "脚本加载完成");
     } catch (e) {
         logSakuraBackgroundInfo("info", "脚本加载失败");
@@ -323,7 +323,7 @@ function init() {
     /**
      * @name defaultChangeBackground
      * @description 默认背景切换
-     * @param {String} src 
+     * @param {String} src
      */
     function defaultChangeBackground(src) {
         //调用setSakuraBackground修改背景
@@ -440,7 +440,7 @@ function localStorageAPI() {
     /**
      * @name addBackgroundURL
      * @description 用于存储背景url或base64
-     * @param {string} url 
+     * @param {string} url
      * @returns JSON数据
      */
     const addBackgroundURL = function (url) {
@@ -472,7 +472,7 @@ function localStorageAPI() {
     }
     /**
      * @name getBackgroundURL
-     * @description 获取背景url或base64 
+     * @description 获取背景url或base64
      * @returns 背景url或base64
      */
     const getBackgroundURL = function () {
@@ -482,7 +482,7 @@ function localStorageAPI() {
     }
     /**
      * @name deleteBackgroundURL
-     * @description 删除背景url或base64 
+     * @description 删除背景url或base64
      * @returns JSON数据
      */
     const deleteBackgroundURL = function () {
@@ -510,14 +510,14 @@ function localStorageAPI() {
 /**
  * @name dbopen
  * @description 用indexedDB存储数据API
- * @returns 
+ * @returns
  */
 async function dbopen() {
     const dbName = 'backgroundURL';
     const storeName = 'SakuraBCUrl';
 
     try {
-        // 使用 async/await 替代事件监听  
+        // 使用 async/await 替代事件监听
         const dbPromise = new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, 1);
 
@@ -543,7 +543,7 @@ async function dbopen() {
 
         const db = await dbPromise;
 
-        // 定义数据库操作方法  
+        // 定义数据库操作方法
         function addBackgroundURL(url) {
             //设置一个5MB大小的分片
             let chunkSize = 5 * 1024 * 1024;
@@ -572,27 +572,27 @@ async function dbopen() {
 
         function getBackgroundURL() {
             return new Promise((resolve, reject) => {
-                // 获取所有分片  
+                // 获取所有分片
                 let transaction = db.transaction([storeName], "readonly");
-                // 获取objectStore  
+                // 获取objectStore
                 let objectStore = transaction.objectStore(storeName);
-                // 获取所有分片  
+                // 获取所有分片
                 let request = objectStore.getAll();
 
-                // 监听成功事件  
+                // 监听成功事件
                 request.onsuccess = function (event) {
-                    // 获取结果  
+                    // 获取结果
                     let result = event.target.result;
                     let url = "";
-                    // 遍历result, 拼接url  
+                    // 遍历result, 拼接url
                     result.forEach(function (chunk) {
                         url += chunk.data;
                     });
-                    // 解析Promise并返回url  
+                    // 解析Promise并返回url
                     resolve(url);
                 };
 
-                // 监听错误事件  
+                // 监听错误事件
                 request.onerror = function (event) {
                     logSakuraBackgroundInfo("error", "获取背景url或base64失败");
                     reject(new Error("获取背景url或base64失败"));
@@ -602,39 +602,39 @@ async function dbopen() {
 
         function deleteBackgroundURL() {
             return new Promise((resolve, reject) => {
-                // 创建事务  
+                // 创建事务
                 let transaction = db.transaction([storeName], "readwrite");
-                // 获取objectStore  
+                // 获取objectStore
                 let objectStore = transaction.objectStore(storeName);
 
-                // 监听事务完成事件  
+                // 监听事务完成事件
                 transaction.oncomplete = function () {
-                    // 当事务完成时，解析Promise并返回成功消息  
+                    // 当事务完成时，解析Promise并返回成功消息
                     resolve({
                         "status": true,
                         "message": "删除成功"
                     });
                 };
 
-                // 监听事务错误事件  
+                // 监听事务错误事件
                 transaction.onerror = function (event) {
-                    // 当事务出错时，拒绝Promise并返回错误信息  
+                    // 当事务出错时，拒绝Promise并返回错误信息
                     reject(new Error("删除背景URL失败: " + event.target.error.message));
                 };
 
-                // 删除所有分片  
+                // 删除所有分片
                 objectStore.clear();
             });
         }
 
         function closeIndexedDB() {
-            // 关闭数据库连接  
+            // 关闭数据库连接
             if (db) {
                 db.close();
             }
         }
 
-        // 返回包含数据库操作方法的对象  
+        // 返回包含数据库操作方法的对象
         return {
             addBackgroundURL,
             getBackgroundURL,
@@ -643,13 +643,13 @@ async function dbopen() {
         };
     } catch (error) {
         logSakuraBackgroundInfo("error", error.message);
-        throw error; // 抛出异常，以便调用者知道发生了错误  
+        throw error; // 抛出异常，以便调用者知道发生了错误
     }
 }
 async function addBCGURL(url) {
     const dbMethods = await dbopen();
     try {
-        // 调用 addBackgroundURL 方法添加背景URL  
+        // 调用 addBackgroundURL 方法添加背景URL
         let res = await dbMethods.addBackgroundURL(url);
         logSakuraBackgroundInfo("info", res.message);
     } catch (e) {
@@ -742,9 +742,11 @@ function setSakuraBackground(url, isAB) {
             rootNode = $('.p-relative main');
             //评论区卡片透明
             let nodes = document.querySelectorAll('.feed-card>.content>div');
-            for (let i = 0; i < nodes.length; i++) {
-                let childNode = nodes[i].children[0];
-                childNode.style.setProperty('background-color', 'rgba(255, 255, 255, 0.2)', 'important');
+            if (nodes) {
+                for (let i = 0; i < nodes.length; i++) {
+                    let childNode = nodes[i].children[0];
+                    childNode.style.setProperty('background-color', 'rgba(255, 255, 255, 0.2)', 'important');
+                }
             }
         } else {
             if ($('#sakuraBackground').length > 0) {
@@ -769,14 +771,13 @@ function setSakuraBackground(url, isAB) {
                 "top": "0",
                 "left": "0",
             })
-            sakuraBackgroundNode[0].style.backgroundSize = "100% 100%";
+            sakuraBackgroundNode.style.backgroundSize = "100% 100%";
         }
         rootNode.css({
             "background": "url(" + url + ") no-repeat center center / 100% 100%",
             'webkitBackgroundSize': 'cover',
             'backgroundAttachment': 'fixed',
         })
-        console.log(rootNode);
         rootNode[0].style.backgroundSize = "100% 100%";
     } else if (isAB == "acfun") {
         if ($('.home-main-content').length > 0) {
@@ -821,7 +822,7 @@ function setSakuraBackground(url, isAB) {
                 "webkitBackgroundSize": 'cover',
                 "zIndex": '-1'
             })
-            sakuraBackgroundNode[0].style.backgroundSize = "100% 100%";
+            sakuraBackgroundNode.style.backgroundSize = "100% 100%";
         }
         //将节点css修改为指定样式
         rootNode.css({
@@ -836,8 +837,8 @@ function setSakuraBackground(url, isAB) {
 /**
  * @name logSakuraBackgroundInfo
  * @description 输出日志
- * @param {string} type 
- * @param  {...string} obj 
+ * @param {string} type
+ * @param  {...string} obj
  * @return noreturn
  */
 function logSakuraBackgroundInfo(type, ...objs) {
@@ -851,4 +852,33 @@ function logSakuraBackgroundInfo(type, ...objs) {
     //输出日志
     console[type](strs);
 }
+
+/**
+ * @name newScriptInfoHttpGet
+ * @description 用于获取脚本更新信息
+ */
+async function newScriptInfoHttpGet() {
+    //localstorage获取时间戳
+    let localTime = localStorage.getItem('SakuraBackgroundScriptInfoTime');
+
+    try {
+        //发送http请求获取data数据
+        let response = await fetchJSON('https://example.com/script-info');
+
+        //对比时间戳
+        if (response.data.serverTime > localTime) {
+            //如果服务器的时间戳大于本地时间戳，则alert一个脚本更新信息
+            alert('脚本更新信息：\n' + response.data.message);
+
+            //更新本地时间戳
+            localStorage.setItem('SakuraBackgroundScriptInfoTime', response.timestamp);
+        }
+    } catch (error) {
+        //如果在发送请求时发生错误，我们使用try-catch语句捕获错误，并使用logSakuraBackgroundInfo函数记录错误信息。
+        logSakuraBackgroundInfo('Error', error);
+    }
+}
+
+
+
 //#endregion
