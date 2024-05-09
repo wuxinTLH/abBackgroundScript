@@ -4,7 +4,7 @@
 // @description  AB站背景更改油猴脚本，支持交互式背景选择和存储。
 // @icon         http://github.smiku.site/sakura.png
 // @license      MIT
-// @version      1.0.0.7
+// @version      1.0.0.8
 // @author       SakuraMikku
 // @copyright    2023-2099, SakuraMikku
 // @updateURL    https://github.com/wuxinTLH/abBackgroundScript/blob/main/abBackgroundScript.js
@@ -176,6 +176,8 @@ function init() {
         border-top-right-radius: 14PX;
         color: #333;
         user-select: none;
+        line-height:24px;
+        padding-left:24px;
     }
 
     #sakuraBackgroundBox {
@@ -845,12 +847,8 @@ function logSakuraBackgroundInfo(type, ...objs) {
     //设置日志信息
     let date = new Date();
     let strs = `[SakuraBackgroundScript] ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    //将信息并入strs
-    objs.forEach(element => {
-        strs += ` ${element}`;
-    });
     //输出日志
-    console[type](strs);
+    console[type](strs, objs);
 }
 
 /**
